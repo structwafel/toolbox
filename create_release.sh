@@ -2,6 +2,12 @@
 
 # script to make git releases
 
+# Check if gh CLI is installed
+if ! command -v gh &> /dev/null; then
+    echo "Error: GitHub CLI (gh) is not installed"
+    exit 1
+fi
+
 # Check if we're on main branch
 CURRENT_BRANCH=$(git branch --show-current)
 if [ "$CURRENT_BRANCH" != "main" ]; then
@@ -32,20 +38,21 @@ sed -i "s/version: .*/version: $NEW_VERSION/" pubspec.yaml
 echo "Building APK..."
 flutter build apk --release
 
-# Create git tag
+# Create git tag and commit
 git add pubspec.yaml
 git commit -m "Release version $NEW_VERSION"
 git tag -a "v$NEW_VERSION" -m "Release version $NEW_VERSION"
-
-# Create release directory if it doesn't exist
-mkdir -p releases
-
-# Copy APK to releases directory
-cp build/app/outputs/flutter-apk/app-release.apk "releases/structwafels-toolbox-$NEW_VERSION.apk"
 
 # Push changes and tags
 echo "Pushing changes to remote..."
 git push origin main
 git push origin "v$NEW_VERSION"
+
+# Create GitHub release with APK
+echo "Creating GitHub release..."
+gh release create "v$NEW_VERSION" \
+    --title "Release v$NEW_VERSION" \
+    --notes "Release version $NEW_VERSION" \
+    build/app/outputs/flutter-apk/app-release.apk#"structwafels-toolbox-$NEW_VERSION.apk"
 
 echo "Release $NEW_VERSION created and pushed successfully!"
