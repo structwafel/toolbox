@@ -66,11 +66,51 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      body: _currentIndex == 0
-          ? Center(
-              child: Text('Welcome to structwafels Toolbox'),
-            )
-          : MidnightCalculatorScreen(),
+      body: _getScreen(),
     );
+  }
+
+  Widget _getScreen() {
+    switch (_currentIndex) {
+      case 0:
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.apps,
+                size: 80,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Welcome to Structwafels Toolbox',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Available Tools:',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 8),
+              Card(
+                margin: const EdgeInsets.symmetric(horizontal: 32),
+                child: ListTile(
+                  leading: const Icon(Icons.calculate),
+                  title: const Text('Midnight Calculator'),
+                  subtitle: const Text('Calculate astronomical midnight'),
+                  onTap: () => setState(() => _currentIndex = 1),
+                ),
+              ),
+            ],
+          ),
+        );
+      case 1:
+        return const MidnightCalculatorScreen();
+      default:
+        return const Center(
+          child: Text('Screen not found'),
+        );
+    }
   }
 }

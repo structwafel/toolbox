@@ -19,6 +19,7 @@ class _MidnightCalculatorScreenState extends State<MidnightCalculatorScreen>
   bool _isPermissionDenied = false;
   StreamSubscription<Position>? _locationStreamSubscription;
   bool _isPaused = false; // Flag to track pause state
+  Timer? _countdownTimer;
 
   @override
   void initState() {
@@ -29,6 +30,7 @@ class _MidnightCalculatorScreenState extends State<MidnightCalculatorScreen>
 
   @override
   void dispose() {
+    _countdownTimer?.cancel();
     _locationStreamSubscription?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
@@ -100,25 +102,29 @@ class _MidnightCalculatorScreenState extends State<MidnightCalculatorScreen>
   void _updateCountdown() {
     if (_currentPosition == null) return;
 
-    final now = DateTime.now();
-    final nextMidnight = calculateMidnight();
-    final remaining = nextMidnight.difference(now);
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return;
 
-    setState(() {
-      _countdown =
-          'Time until midnight: ${remaining.inHours}:${(remaining.inMinutes % 60).toString().padLeft(2, '0')}:${(remaining.inSeconds % 60).toString().padLeft(2, '0')}';
+      final now = DateTime.now();
+      final nextMidnight = calculateMidnight(now);
+      final remaining = nextMidnight.difference(now);
+
+      setState(() {
+        _countdown =
+            'Time until midnight: ${remaining.inHours}:${(remaining.inMinutes % 60).toString().padLeft(2, '0')}:${(remaining.inSeconds % 60).toString().padLeft(2, '0')}';
+      });
     });
   }
 
-  DateTime calculateMidnight() {
-    final nextMidnight = SunCalc.getTimes(DateTime.now(),
-            _currentPosition!.latitude, _currentPosition!.longitude)["nadir"]!
+  DateTime calculateMidnight(DateTime now) {
+    final nextMidnight = SunCalc.getNadir(
+            now, _currentPosition!.latitude, _currentPosition!.longitude)
         .toLocal();
 
     // Check if nadir is tomorrow
-    if (nextMidnight.isBefore(DateTime.now())) {
-      return SunCalc.getTimes(DateTime.now().add(Duration(days: 1)),
-              _currentPosition!.latitude, _currentPosition!.longitude)["nadir"]!
+    if (nextMidnight.isBefore(now)) {
+      return SunCalc.getNadir(now.add(Duration(days: 1)),
+              _currentPosition!.latitude, _currentPosition!.longitude)
           .toLocal();
     }
     return nextMidnight;
