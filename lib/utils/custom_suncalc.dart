@@ -1,4 +1,4 @@
-library custom_suncalc;
+library;
 
 import 'dart:math' as math;
 

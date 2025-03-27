@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/midnight_calculator.dart';
+import 'screens/decibel.dart';
 
 void main() {
   runApp(const MyApp());
@@ -63,6 +64,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 setState(() => _currentIndex = 1);
               },
             ),
+            ListTile(
+              title: Text('Sound Meter'),
+              onTap: () {
+                Navigator.pop(context);
+                setState(() => _currentIndex = 2);
+              },
+            ),
           ],
         ),
       ),
@@ -102,11 +110,23 @@ class _MyHomePageState extends State<MyHomePage> {
                   onTap: () => setState(() => _currentIndex = 1),
                 ),
               ),
+              const SizedBox(height: 8),
+              Card(
+                margin: const EdgeInsets.symmetric(horizontal: 32),
+                child: ListTile(
+                  leading: const Icon(Icons.volume_up),
+                  title: const Text('Sound Meter'),
+                  subtitle: const Text('Measure ambient sound levels'),
+                  onTap: () => setState(() => _currentIndex = 2),
+                ),
+              ),
             ],
           ),
         );
       case 1:
         return const MidnightCalculatorScreen();
+      case 2:
+        return const SoundMeterScreen();
       default:
         return const Center(
           child: Text('Screen not found'),

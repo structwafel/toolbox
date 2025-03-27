@@ -7,11 +7,11 @@ class MidnightCalculatorScreen extends StatefulWidget {
   const MidnightCalculatorScreen({super.key});
 
   @override
-  _MidnightCalculatorScreenState createState() =>
-      _MidnightCalculatorScreenState();
+  MidnightCalculatorScreenState createState() =>
+      MidnightCalculatorScreenState();
 }
 
-class _MidnightCalculatorScreenState extends State<MidnightCalculatorScreen>
+class MidnightCalculatorScreenState extends State<MidnightCalculatorScreen>
     with WidgetsBindingObserver {
   Position? _currentPosition;
   String _coordinates = 'Fetching location...';
